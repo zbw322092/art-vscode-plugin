@@ -10,10 +10,19 @@
 		"Other"
 	],
 	"activationEvents": [
+		"onView:artProjectExplorer",
 		"onCommand:extension.helloWorld"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
+		"views": {
+			"explorer": [
+				{
+					"id": "artProjectExplorer",
+					"name": "art project explorer"
+				}
+			]
+		},
 		"commands": [
 			{
 				"command": "extension.helloWorld",
