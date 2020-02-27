@@ -7,10 +7,13 @@ import { ModuleExplorerLevel } from './enums/ModuleExplorerLevel';
 export class ArtConfigProvider implements vscode.TreeDataProvider<ArtModules> {
   constructor(workspaceRoot: string) {
     this.workspaceRoot = workspaceRoot;
+    this.artConfigPath = path.join(this.workspaceRoot, Filenames.artConfigFile);
     this.createArtConfigFileWatcher();
+    this.registerArtCommand();
   }
 
   private workspaceRoot: string;
+  private artConfigPath: string;
 
   private _onDidChangeTreeData: vscode.EventEmitter<ArtModules> =
     new vscode.EventEmitter<ArtModules>();
@@ -20,13 +23,12 @@ export class ArtConfigProvider implements vscode.TreeDataProvider<ArtModules> {
   private createArtConfigFileWatcher() {
     const fileSystemWatcher = vscode.workspace.createFileSystemWatcher('**/art.config.js', true, false, false);
     fileSystemWatcher.onDidChange((event: vscode.Uri) => {
-      console.log('changed file: ', event.fsPath);
-
       this.refresh();
     });
   }
 
-  public refresh = () => {
+  public refresh() {
+    delete require.cache[require.resolve(this.artConfigPath)];
     this._onDidChangeTreeData.fire();
   };
 
@@ -42,7 +44,9 @@ export class ArtConfigProvider implements vscode.TreeDataProvider<ArtModules> {
 
     if (!element) {
       const artWebpackEntries = this.getArtConfig('webpack.entry') || {};
+      const artVirtualPath = this.getArtConfig('projectVirtualPath');
       const artModules = Object.keys(artWebpackEntries).map((entry) => {
+        entry = entry.split(artVirtualPath)[1].slice(1);
         return new ArtModules(entry, vscode.TreeItemCollapsibleState.Collapsed, ModuleExplorerLevel.module);
       });
   
@@ -53,13 +57,39 @@ export class ArtConfigProvider implements vscode.TreeDataProvider<ArtModules> {
       if (element.level === ModuleExplorerLevel.command) {
         return Promise.resolve([]);
       } else {
+        const artServe = new ArtModules('serve', vscode.TreeItemCollapsibleState.None, ModuleExplorerLevel.command);
+        const artBuild = new ArtModules('build', vscode.TreeItemCollapsibleState.None, ModuleExplorerLevel.command);
+        artServe.command = {
+          title: 'serve',
+          command: 'artCommand.serve',
+          arguments: [element.label]
+        };
+        artBuild.command = {
+          title: 'build',
+          command: 'artCommand.build',
+          arguments: [element.label]
+        };
         return Promise.resolve([
-          new ArtModules('serve', vscode.TreeItemCollapsibleState.None, ModuleExplorerLevel.command),
-          new ArtModules('build', vscode.TreeItemCollapsibleState.None, ModuleExplorerLevel.command)
+          artServe, artBuild
         ]);
       }
     }
 
+  }
+
+  private registerArtCommand() {
+    vscode.commands.registerCommand('artCommand.serve', (moduleName: string) => {
+      console.log('serve art module: ', moduleName);
+      const terminal = vscode.window.createTerminal({});
+      terminal.show();
+      terminal.sendText(`art serve -m="${moduleName}"`);
+    });
+    vscode.commands.registerCommand('artCommand.build', (moduleName: string) => {
+      console.log('build art module: ', moduleName);
+      const terminal = vscode.window.createTerminal({});
+      terminal.show();
+      terminal.sendText(`art build -m="${moduleName}"`);
+    });
   }
 
   private isArtProject() {
@@ -67,11 +97,9 @@ export class ArtConfigProvider implements vscode.TreeDataProvider<ArtModules> {
   }
 
   private getArtConfig(key: string) {
-    let artConfig = {};
+    let artConfig: any;
     try {
-      const artConfigPath = path.join(this.workspaceRoot, Filenames.artConfigFile);
-      delete require.cache[require.resolve(artConfigPath)];
-      artConfig = require(artConfigPath);
+      artConfig = require(this.artConfigPath);
     } catch (err) {
       console.error(err);
       return artConfig;
