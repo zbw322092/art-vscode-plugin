@@ -29,10 +29,33 @@
 				"title": "Hello World"
 			},
 			{
-				"command": "artProjectExplorer:refresh",
-				"title": "refresh art project explorer"
+				"command": "artProjectExplorer.refresh",
+				"title": "Refresh Art Config",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
+			},
+			{
+				"command": "artProjectExplorer.add",
+				"title": "Add Art Module",
+				"icon": "resources/add.svg"
 			}
-		]
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "artProjectExplorer.refresh",
+					"when": "view == artProjectExplorer",
+					"group": "navigation"
+				},
+				{
+					"command": "artProjectExplorer.add",
+					"when": "view == artProjectExplorer",
+					"group": "navigation"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run compile",

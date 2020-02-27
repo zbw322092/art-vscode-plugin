@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Filenames } from './constants/Filenames';
 import { ModuleExplorerLevel } from './enums/ModuleExplorerLevel';
+import { ProjectType } from './enums/ProjectType';
 
 export class ArtConfigProvider implements vscode.TreeDataProvider<ArtModules> {
   constructor(workspaceRoot: string) {
@@ -27,9 +28,18 @@ export class ArtConfigProvider implements vscode.TreeDataProvider<ArtModules> {
     });
   }
 
-  public refresh() {
+  public refresh = () => {
+    console.log('refresh art config');
     delete require.cache[require.resolve(this.artConfigPath)];
     this._onDidChangeTreeData.fire();
+  };
+
+  public add = () => {
+    console.log('add art module');
+    const artProjectType = this.getArtConfig('projectType') || ProjectType.SPA_REACT;
+    const terminal = vscode.window.createTerminal();
+    terminal.show();
+    terminal.sendText(`art create module -s="${artProjectType}"`);
   };
 
   public getTreeItem(element: ArtModules): vscode.TreeItem | Thenable<vscode.TreeItem> {
@@ -80,13 +90,13 @@ export class ArtConfigProvider implements vscode.TreeDataProvider<ArtModules> {
   private registerArtCommand() {
     vscode.commands.registerCommand('artCommand.serve', (moduleName: string) => {
       console.log('serve art module: ', moduleName);
-      const terminal = vscode.window.createTerminal({});
+      const terminal = vscode.window.createTerminal();
       terminal.show();
       terminal.sendText(`art serve -m="${moduleName}"`);
     });
     vscode.commands.registerCommand('artCommand.build', (moduleName: string) => {
       console.log('build art module: ', moduleName);
-      const terminal = vscode.window.createTerminal({});
+      const terminal = vscode.window.createTerminal();
       terminal.show();
       terminal.sendText(`art build -m="${moduleName}"`);
     });
@@ -107,7 +117,7 @@ export class ArtConfigProvider implements vscode.TreeDataProvider<ArtModules> {
 
     const keys = key.split('.');
     keys.forEach((v) => {
-      artConfig = (artConfig as any)[v] || {};
+      artConfig = (artConfig as any)[v];
     });
 
     return artConfig;
