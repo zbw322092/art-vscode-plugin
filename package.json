@@ -27,6 +27,10 @@
 			{
 				"command": "extension.helloWorld",
 				"title": "Hello World"
+			},
+			{
+				"command": "artProjectExplorer:refresh",
+				"title": "refresh art project explorer"
 			}
 		]
 	},

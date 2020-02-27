@@ -25,6 +25,10 @@ export function activate(context: vscode.ExtensionContext) {
 	// @ts-ignore
 	const artConfigProvider = new ArtConfigProvider(vscode.workspace.workspaceFolders[0].uri.path);
 	vscode.window.createTreeView('artProjectExplorer', { treeDataProvider: artConfigProvider });
+	vscode.commands.registerCommand('artProjectExplorer:refresh', artConfigProvider.refresh);
+	// vscode.commands.registerCommand('artProjectExplorer:refresh', () => {
+	// 	vscode.window.showInformationMessage('111');
+	// });
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
