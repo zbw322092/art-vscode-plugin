@@ -29,7 +29,8 @@ export function activate(context: vscode.ExtensionContext) {
 		showCollapseAll: true
 	});
 	vscode.commands.registerCommand('artProjectExplorer.refresh', artConfigProvider.refresh);
-	vscode.commands.registerCommand('artProjectExplorer.add', artConfigProvider.add);
+	vscode.commands.registerCommand('artProjectExplorer.createModule', artConfigProvider.createModule);
+	vscode.commands.registerCommand('artProjectExplorer.createProject', artConfigProvider.createProject);
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand

@@ -37,9 +37,13 @@
 				}
 			},
 			{
-				"command": "artProjectExplorer.add",
-				"title": "Add Art Module",
+				"command": "artProjectExplorer.createModule",
+				"title": "Create Art Module",
 				"icon": "resources/add.svg"
+			},
+			{
+				"command": "artProjectExplorer.createProject",
+				"title": "Create Art Project"
 			}
 		],
 		"menus": {
@@ -50,7 +54,7 @@
 					"group": "navigation"
 				},
 				{
-					"command": "artProjectExplorer.add",
+					"command": "artProjectExplorer.createModule",
 					"when": "view == artProjectExplorer",
 					"group": "navigation"
 				}

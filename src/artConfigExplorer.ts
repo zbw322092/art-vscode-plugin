@@ -34,8 +34,41 @@ export class ArtConfigProvider implements vscode.TreeDataProvider<ArtModules> {
     this._onDidChangeTreeData.fire();
   };
 
-  public add = () => {
-    console.log('add art module');
+  public createProject = () => {
+    console.log('creare art project');
+    const pick = vscode.window.createQuickPick();
+    pick.items = [
+      { label: 'SPA-React', description: 'Client-Side Rendering Single Page Application, Using React.js' },
+      { label: 'SPA-Vue', description: 'Client-Side Rendering Single Page Application, Using Vue.js' },
+      { label: 'SSR-React', description: 'Server-Side Rendering Application, Using React.js' },
+      { label: 'SSR-Vue', description: 'Server-Side Rendering Application, Using Vue.js' },
+      { label: 'Miniprogram', description: 'Tencent Miniprogram Application' }
+    ];
+    pick.placeholder = 'Please choose the project you would like to create';
+    pick.show();
+    pick.onDidAccept((event) => {
+      const artProjectTypeMap = new Map([
+        ['SPA-React', 'react'],
+        ['SPA-Vue', 'vue'],
+        ['SSR-React', 'ssr-react'],
+        ['SSR-Vue', 'ssr-vue'],
+        ['Miniprogram', 'miniprogram']
+      ]);
+      const selectedItem = pick.activeItems[0];
+      const projectType = artProjectTypeMap.get(selectedItem.label);
+      console.log('Art Create Project, user selected: ', selectedItem);
+      console.log('Project Type: ', projectType);
+
+      pick.hide();
+
+      const terminal = vscode.window.createTerminal()
+      terminal.sendText(`art create project -s="${projectType}"`);
+      terminal.show();
+    });
+  };
+
+  public createModule = () => {
+    console.log('creare art module');
     const artProjectType = this.getArtConfig('projectType') || ProjectType.SPA_REACT;
     const terminal = vscode.window.createTerminal();
     terminal.show();
