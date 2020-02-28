@@ -44,6 +44,10 @@
 			{
 				"command": "artProjectExplorer.createProject",
 				"title": "Create Art Project"
+			},
+			{
+				"command": "artHelpCenter.show",
+				"title": "Show Art Help Center"
 			}
 		],
 		"menus": {

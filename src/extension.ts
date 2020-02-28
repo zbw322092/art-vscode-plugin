@@ -9,14 +9,6 @@ import { ArtConfigProvider } from './artConfigExplorer';
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// const isArtProject = vscode.workspace.workspaceFolders &&
-	// 	fs.existsSync(path.join(vscode.workspace.workspaceFolders[0].uri.path, 'art.config.js'));
-
-	// if (!isArtProject) {
-	// 	console.log('Not Art Project');
-	// 	return;
-	// }
-
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "art-vscode-plugin" is now active!');
@@ -31,6 +23,22 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('artProjectExplorer.refresh', artConfigProvider.refresh);
 	vscode.commands.registerCommand('artProjectExplorer.createModule', artConfigProvider.createModule);
 	vscode.commands.registerCommand('artProjectExplorer.createProject', artConfigProvider.createProject);
+
+
+	vscode.commands.registerCommand('artHelpCenter.show', () => {
+		const webviewPanel = vscode.window.createWebviewPanel('viewType', 'Art Help Center', {
+			viewColumn: vscode.ViewColumn.Beside,
+			preserveFocus: false
+		}, {
+			enableFindWidget: true,
+			retainContextWhenHidden: true,
+			localResourceRoots: [vscode.Uri.file(path.join(context.extensionPath, 'pages'))]
+		});
+
+		webviewPanel.webview.html = fs.readFileSync(path.join(context.extensionPath, 'pages/index.html')).toString('utf-8');
+
+		webviewPanel.reveal();
+	});
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
